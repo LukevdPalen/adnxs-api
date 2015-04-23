@@ -1,0 +1,15 @@
+{
+  "name": "adnxs-api",
+  "version": "0.0.1",
+  "description": "Another AppNexus API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "AppNexus",
+    "API"
+  ],
+  "author": "Luke van der Palen <luke.vanderpalen@fresh-fruit.com>",
+  "license": "MIT"
+}
