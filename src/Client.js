@@ -1,7 +1,7 @@
 /**
  * Created by Luke on 01/05/15.
  */
-import endpoints from './endpoints';
+import endpoints from './Endpoints';
 import Transport from './Transport';
 import {RateLimiter} from 'limiter';
 
