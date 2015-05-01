@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/freshfruitdigital/adnxs-api.svg?branch=master)](https://travis-ci.org/freshfruitdigital/adnxs-api)
 # adnxs-api
 
 > adnxs-api is an AppNexus client, source written in es6
