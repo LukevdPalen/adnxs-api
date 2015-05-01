@@ -1,7 +1,7 @@
 # adnxs-api
 
-> adnxs-api is an AppNexus client for iojs written in es6
+> adnxs-api is an AppNexus client, source written in es6
 
 ## Install
  
- 	$ npm install adnxs-api
+ 	$ npm install adnxs-api --save
