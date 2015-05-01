@@ -4,8 +4,8 @@
 
 import Client from './Client';
 import Transport from './Transport';
-import endPoints from './endPoints';
+import endpoints from './endpoints';
 
 export { Client  };
 export { Transport };
-export { endPoints  };
+export { endpoints  };

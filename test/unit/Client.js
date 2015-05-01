@@ -3,8 +3,7 @@
  */
 /*jshint nonew: false */
 
-import {Client} from '../../src/index';
-import endpoints from '../../src/endpoints';
+import {Client, endpoints} from '../../src/index';
 
 var client;
 

@@ -79,7 +79,7 @@ class Client extends Transport{
         }
 
         return this.post(endpoints.AUTHENTICATION_SERVICE, data)
-            .then((response) => {
+            .then((response) => {§
                 this.options.token  = {value: response.token, _ts: +new Date()};
                 return response.token;
             });
