@@ -1,3 +1,6 @@
+/**
+ * Created by Luke on 01/05/15.
+ */
 import endpoints from './endpoints';
 import Transport from './Transport';
 import {RateLimiter} from 'limiter';
@@ -59,7 +62,7 @@ class Client extends Transport{
      * @params {string} password - Password
      * @returns {Promise<String, Error>} AppNexus Access Token
      */
-     authorize(username, password){
+    authorize(username, password){
 
         if(!username || !password){
             throw Error('Authorization credentials are missing!');
@@ -67,22 +70,22 @@ class Client extends Transport{
 
         credentials = { username, password };
 
-         var data = {
-             auth : credentials
-         };
+        var data = {
+            auth : credentials
+        };
 
-         if(this.options.token){
-             delete this.options.token;
-         }
+        if(this.options.token){
+            delete this.options.token;
+        }
 
-         return this.post(endpoints.AUTHENTICATION_SERVICE, data)
+        return this.post(endpoints.AUTHENTICATION_SERVICE, data)
             .then((response) => {
-                 console.log(response);
+                console.log(response);
 
-                 this.options.token  = {value: response.token, _ts: +new Date()};
-                 return response.token;
+                this.options.token  = {value: response.token, _ts: +new Date()};
+                return response.token;
             });
-     }
+    }
 
     /**
      * Refresh token

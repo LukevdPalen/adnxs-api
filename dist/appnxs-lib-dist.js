@@ -12,7 +12,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
     'use strict';
 
     /**
-     * Created by Luke on 23/04/15.
+     * Created by Luke on 01/05/15.
      */
 
     var _endpoints__endpoints = {
@@ -124,7 +124,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
     /*jshint camelcase: false */
 
     /**
-     * Created by Luke on 23/04/15.
+     * Created by Luke on 01/05/15.
      */
 
     function responseContainsError(body) {
@@ -150,6 +150,9 @@ var _createClass = (function () { function defineProperties(target, props) { for
         return error;
     }
 
+    /**
+     * Created by Luke on 01/05/15.
+     */
     var MAX_WRITE_PER_MIN = 60;
 
     /** @constant {number} */
@@ -288,6 +291,9 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
     var _Transport = Transport;
 
+    /**
+     * Created by Luke on 01/05/15.
+     */
     var MAX_AUTH_PERIOD = 300000;
 
     /** @constant {number} */
@@ -489,7 +495,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
     var _Client = Client;
 
     /**
-     * Created by Luke on 23/04/15.
+     * Created by Luke on 01/05/15.
      */
 
     var endPoints__endpoints = {
@@ -598,6 +604,10 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
     var endPoints = endPoints__endpoints;
 
+    /**
+     * Created by Luke on 01/05/15.
+     */
+
     var AppNxs = {
         Client: Client,
         Transport: Transport,
@@ -608,4 +618,4 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
     exports['default'] = index;
 });
-//# sourceMappingURL=./library-dist.js.map
+//# sourceMappingURL=./appnxs-lib-dist.js.map

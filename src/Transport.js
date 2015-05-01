@@ -1,3 +1,6 @@
+/**
+ * Created by Luke on 01/05/15.
+ */
 import {default as rp} from 'request-promise';
 import {responseContainsError, handleErrorResponse} from './utils/ErrorHandlers';
 
