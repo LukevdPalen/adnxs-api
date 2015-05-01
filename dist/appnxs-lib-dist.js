@@ -7,8 +7,8 @@ var _classCallCheck = function (instance, Constructor) { if (!(instance instance
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('limiter'), require('request-promise')) : typeof define === 'function' && define.amd ? define(['exports', 'limiter', 'request-promise'], factory) : factory(global.AddNXS = {}, global._limiter, global.request_promise);
-})(this, function (exports, _limiter, request_promise) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('request-promise'), require('limiter')) : typeof define === 'function' && define.amd ? define(['exports', 'request-promise', 'limiter'], factory) : factory(global['null'] = {}, global.request_promise, global._limiter);
+})(this, function (exports, request_promise, _limiter) {
     'use strict';
 
     /**
@@ -140,7 +140,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
         return error;
     }
 
-    function handleErrorResponse(body, eventEmitter, callback) {
+    function handleErrorResponse(body) {
         var error = wrapAppnexusError(body);
         //if (error.error_id) {
         //    //eventEmitter.emit(error.error_id, body.response);
@@ -152,16 +152,6 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
     /**
      * Created by Luke on 01/05/15.
-     */
-    var MAX_WRITE_PER_MIN = 60;
-
-    /** @constant {number} */
-    var MAX_READ_PER_MIN = 100;
-
-    /**
-     * AppNexus Transport class.
-     * @class Transport
-     * @classdesc The transport is responsible for handling al request to the AppNexus api service
      */
 
     var Transport = (function () {
@@ -277,7 +267,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
                     };
                 }
 
-                return request_promise__default(payload).then(function (body) {
+                return request_promise(payload).then(function (body) {
                     if (responseContainsError(body)) {
                         throw handleErrorResponse(body);
                     }
@@ -290,6 +280,8 @@ var _createClass = (function () { function defineProperties(target, props) { for
     })();
 
     var _Transport = Transport;
+
+    exports.Transport = _Transport;
 
     /**
      * Created by Luke on 01/05/15.
@@ -379,8 +371,6 @@ var _createClass = (function () { function defineProperties(target, props) { for
                 }
 
                 return this.post(_endpoints.AUTHENTICATION_SERVICE, data).then(function (response) {
-                    console.log(response);
-
                     _this2.options.token = { value: response.token, _ts: +new Date() };
                     return response.token;
                 });
@@ -494,6 +484,8 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
     var _Client = Client;
 
+    exports.Client = _Client;
+
     /**
      * Created by Luke on 01/05/15.
      */
@@ -604,18 +596,10 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
     var endPoints = endPoints__endpoints;
 
+    exports.endPoints = endPoints;
+
     /**
      * Created by Luke on 01/05/15.
      */
-
-    var AppNxs = {
-        Client: Client,
-        Transport: Transport,
-        endPoints: endPoints
-    };
-
-    var index = AppNxs;
-
-    exports['default'] = index;
 });
 //# sourceMappingURL=./appnxs-lib-dist.js.map

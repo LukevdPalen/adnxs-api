@@ -56,7 +56,7 @@
   },
   "babelBoilerplateOptions":{
     "entryFileName":"index",
-    "exportVarName":"AddNXS",
+    "exportVarName":"null",
     "mochaGlobals":[
       "stub",
       "spy",

@@ -55,7 +55,7 @@
   "wsh"           : false,
   "yui"           : false,
   "globals": {
-    "AppNxs": true,
+    "AddNXS": true,
     "console": true,
     "sinon": true,
     "spy": true,

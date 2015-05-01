@@ -18,7 +18,7 @@ export function wrapAppnexusError(body) {
     return error;
 }
 
-export function handleErrorResponse(body, eventEmitter, callback) {
+export function handleErrorResponse(body) {
     var error = wrapAppnexusError(body);
     //if (error.error_id) {
     //    //eventEmitter.emit(error.error_id, body.response);

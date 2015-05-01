@@ -1,14 +1,9 @@
 /**
  * Created by Luke on 01/05/15.
  */
-import {default as rp} from 'request-promise';
+import * as rp from 'request-promise';
 import {responseContainsError, handleErrorResponse} from './utils/ErrorHandlers';
 
-/** @constant {number} */
-const MAX_WRITE_PER_MIN = 60;
-
-/** @constant {number} */
-const MAX_READ_PER_MIN = 100;
 
 /**
  * AppNexus Transport class.
