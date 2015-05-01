@@ -119,9 +119,9 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
     };
 
-    var _endpoints = endpoints;
+    var Endpoints = endpoints;
 
-    exports.endpoints = _endpoints;
+    exports.endpoints = Endpoints;
 
     /*jshint camelcase: false */
 
@@ -372,7 +372,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
                     delete this.options.token;
                 }
 
-                return this.post(_endpoints.AUTHENTICATION_SERVICE, data).then(function (response) {
+                return this.post(Endpoints.AUTHENTICATION_SERVICE, data).then(function (response) {
                     _this2.options.token = { value: response.token, _ts: +new Date() };
                     return response.token;
                 });
@@ -423,7 +423,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
                 return new Promise(function (resolve, reject) {
                     var limiter = null;
 
-                    if (endpoint === _endpoints.AUTHENTICATION_SERVICE) {
+                    if (endpoint === Endpoints.AUTHENTICATION_SERVICE) {
                         limiter = _this3.authLimiter;
                     } else if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
                         limiter = _this3.writeLimiter;
@@ -472,7 +472,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
                 return this.rateLimiter(method, endpoint).then(function () {
                     // check if token is still valid
-                    if (endpoint !== _endpoints.AUTHENTICATION_SERVICE && _this4.isExpired()) {
+                    if (endpoint !== Endpoints.AUTHENTICATION_SERVICE && _this4.isExpired()) {
                         return _this4.refreshToken().then(_get(Object.getPrototypeOf(Client.prototype), 'request', _this).apply(_this, args));
                     }
 
