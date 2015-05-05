@@ -66,18 +66,18 @@ class Transport{
         return this.request('POST', endpoint, args);
     }
 
-    ///**
-    // * Preform a DELETE request
-    // *
-    // * @method delete
-    // * @see {@link uri} for possible endpoints.
-    // * @params {string} endpoint - api endpoint
-    // * @params {object} [args={}] - arguments
-    // * @returns {Promise<Object, Error>} Response body
-    // **/
-    //delete(endpoint, args={}){
-    //    return this.request('DELETE', endpoint, args);
-    //}
+    /**
+     * Preform a DELETE request
+     *
+     * @method delete
+     * @see {@link uri} for possible endpoints.
+     * @params {string} endpoint - api endpoint
+     * @params {object} [args={}] - arguments
+     * @returns {Promise<Object, Error>} Response body
+     **/
+    delete(endpoint, args={}){
+        return this.request('DELETE', endpoint, args);
+    }
 
     /**
      * Preform a the actual request
