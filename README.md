@@ -38,9 +38,9 @@
  	.then(function(token){
 		return client.get(endpoints.CAMPAIGN_SERVICE, {state: 'active'});
 	})
-    	.then(function(resp){
-    		console.log(resp)
-    	})
+	.then(function(resp){
+		console.log(resp)
+	})
 	.catch(function(err){
 		console.log(err.stack)
 	});
