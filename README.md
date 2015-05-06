@@ -16,14 +16,14 @@
 
 	var client = new Client();
 	client
-		.authorize('FFD', 'xxxxxxx')
-		.then(function(token){
-			//Do something funky..
-			console.log(token)
-		})
-		.catch(function(err){
-				console.log(err.stack)
-		});
+	.authorize('FFD', 'xxxxxxx')
+	.then(function(token){
+		//Do something funky..
+		console.log(token)
+	})
+	.catch(function(err){
+		console.log(err.stack)
+	});
 ```
 
 ### Request all active campaigns
@@ -34,15 +34,15 @@
 	var client = new Client();
 	
 	client
-		.authorize('FFD', 'xxxxxxx') // optional
- 		.then(function(token){
-        return client.get(endpoints.CAMPAIGN_SERVICE, {state: 'active'});
-    })
-    .then(function(resp){
-        console.log(resp)
-    })
-		.catch(function(err){
-				console.log(err.stack)
-		});
+	.authorize('FFD', 'xxxxxxx') // optional
+ 	.then(function(token){
+		return client.get(endpoints.CAMPAIGN_SERVICE, {state: 'active'});
+	})
+    	.then(function(resp){
+    		console.log(resp)
+    	})
+	.catch(function(err){
+		console.log(err.stack)
+	});
 		
 ```
