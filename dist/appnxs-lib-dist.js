@@ -229,20 +229,24 @@ var _createClass = (function () { function defineProperties(target, props) { for
                 return this.request('POST', endpoint, args);
             }
         }, {
-            key: 'request',
+            key: 'delete',
 
-            ///**
-            // * Preform a DELETE request
-            // *
-            // * @method delete
-            // * @see {@link uri} for possible endpoints.
-            // * @params {string} endpoint - api endpoint
-            // * @params {object} [args={}] - arguments
-            // * @returns {Promise<Object, Error>} Response body
-            // **/
-            //delete(endpoint, args={}){
-            //    return this.request('DELETE', endpoint, args);
-            //}
+            /**
+             * Preform a DELETE request
+             *
+             * @method delete
+             * @see {@link uri} for possible endpoints.
+             * @params {string} endpoint - api endpoint
+             * @params {object} [args={}] - arguments
+             * @returns {Promise<Object, Error>} Response body
+             **/
+            value: function _delete(endpoint) {
+                var args = arguments[1] === undefined ? {} : arguments[1];
+
+                return this.request('DELETE', endpoint, args);
+            }
+        }, {
+            key: 'request',
 
             /**
              * Preform a the actual request
@@ -263,9 +267,9 @@ var _createClass = (function () { function defineProperties(target, props) { for
                     method: method
                 };
 
-                if (this.options.token) {
+                if (this.options.token && this.options.token.value) {
                     payload.headers = {
-                        Authorization: this.options.token
+                        Authorization: this.options.token.value
                     };
                 }
 
@@ -403,7 +407,10 @@ var _createClass = (function () { function defineProperties(target, props) { for
              * @returns {boolean} token expired
              */
             value: function isExpired() {
-                return !!(this.options.token && this.options.token._ts + TOKEN_LIFETIME >= +new Date());
+                var ts = arguments[0] === undefined ? 0 : arguments[0];
+
+                var timestamp = this.options.token && this.options.token._ts ? this.options.token._ts : ts;
+                return timestamp + TOKEN_LIFETIME <= +new Date();
             }
         }, {
             key: 'rateLimiter',

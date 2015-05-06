@@ -17,9 +17,20 @@ describe('Client', () => {
         it('should use the sandbox', () => {
             return expect(client.options.apiBase).to.equals('http://sand.api.appnexus.com');
         });
-
     });
 
+    describe('helpers check',() =>{
+        it('should tell me the token is expired', () => {
+            client.options.token = {_ts: +new Date() - 60*60*1000, token: 'blaa'};
+
+            return expect(client.isExpired()).to.be.true;
+        });
+
+        it('should tell me the token is not expired', () => {
+            client.options.token = {_ts: +new Date() - 10, token: 'blaa'};
+            return expect(client.isExpired()).to.be.false;
+        });
+    });
 
     describe('authorization', () => {
         var authorize;
@@ -31,6 +42,12 @@ describe('Client', () => {
 
         it('should preform an successful auth', () => {
             return expect(authorize).to.eventually.be.fullfilled;
+        });
+
+        it('should add token to next request', () =>{
+            //var promise = client.get(endpoints.USER_SERVICE);
+
+            authorize.then(()=> console.log(client));
         });
 
         //it('should throw an error when credentials are missing', () => {

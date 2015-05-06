@@ -105,10 +105,10 @@ class Client extends Transport{
      * @isExpired rateLimiter
      * @returns {boolean} token expired
      */
-    isExpired(){
-        return !!(this.options.token && (this.options.token._ts + TOKEN_LIFETIME) >= +new Date());
+    isExpired(ts = 0){
+        var timestamp = this.options.token && this.options.token._ts ? this.options.token._ts : ts;
+        return timestamp + TOKEN_LIFETIME <= +new Date();
     }
-
 
     /**
      * Rate limit a request according to specs

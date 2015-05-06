@@ -98,9 +98,9 @@ class Transport{
             method
         };
 
-        if(this.options.token){
+        if(this.options.token && this.options.token.value){
             payload.headers = {
-                'Authorization': this.options.token
+                'Authorization': this.options.token.value
             };
         }
 
