@@ -94,9 +94,15 @@ class Transport{
 
         var payload = {
             uri : this.options.apiBase + endpoint,
-            json: args,
             method
         };
+
+        if (method === 'GET') {
+            payload.json = true;
+            payload.qs = args;
+        } else {
+            payload.json = args;
+        }
 
         if(this.options.token && this.options.token.value){
             payload.headers = {
