@@ -1,6 +1,6 @@
 {
   "name":"adnxs-api",
-  "version":"0.0.3",
+  "version":"0.1.0",
   "description":"Another AppNexus API",
   "main":"dist/appnxs-lib-dist.js",
   "scripts":{

@@ -263,9 +263,15 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
                 var payload = {
                     uri: this.options.apiBase + endpoint,
-                    json: args,
                     method: method
                 };
+
+                if (method === 'GET') {
+                    payload.json = true;
+                    payload.qs = args;
+                } else {
+                    payload.json = args;
+                }
 
                 if (this.options.token && this.options.token.value) {
                     payload.headers = {
