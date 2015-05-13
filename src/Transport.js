@@ -15,15 +15,13 @@ class Transport {
    * @constructs Transport
    * @params {object} [options={}] - transport options
    */
-  constructor(options = {}) {
+  constructor(options = { apiBase: '/'}) {
 
     /**
      * Transport options
      * @member Client#options
      */
     this.options = options;
-
-    this.options.apiBase = this.options.apiBase || '/';
   }
 
   /**
@@ -92,8 +90,8 @@ class Transport {
   request(method, endpoint, args) {
 
     var payload = {
-      uri: this.options.apiBase + endpoint,
-      method
+      method,
+      uri: this.options.apiBase + endpoint
     };
 
     if (method === 'GET') {
