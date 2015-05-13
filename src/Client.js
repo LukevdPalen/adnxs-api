@@ -43,14 +43,17 @@ class Client extends Transport {
    * @constructs Client
    * @params {string} [apiBase=http://api.appnexus.com] - default api domain
    */
-  constructor(apiBase = 'http://api.appnexus.com', limits = {}) {
+  constructor(apiBase = 'http://api.appnexus.com',
+              limits = {write: MAX_WRITE_PER_PERIOD,
+                        read: MAX_READ_PER_PERIOD,
+                        auth:MAX_AUTH_PER_PERIOD}) {
     super();
     this.options = {apiBase, limits};
 
     /* Set limiters */
-    this.writeLimiter = new RateLimiter(limits.write || MAX_WRITE_PER_PERIOD, MAX_WRITE_PERIOD);
-    this.readLimiter = new RateLimiter(limits.read || MAX_READ_PER_PERIOD, MAX_READ_PERIOD);
-    this.authLimiter = new RateLimiter(limits.auth || MAX_AUTH_PER_PERIOD, MAX_AUTH_PERIOD);
+    this.writeLimiter = new RateLimiter(limits.write, MAX_WRITE_PERIOD);
+    this.readLimiter = new RateLimiter(limits.read, MAX_READ_PERIOD);
+    this.authLimiter = new RateLimiter(limits.auth, MAX_AUTH_PERIOD);
   }
 
   /**
