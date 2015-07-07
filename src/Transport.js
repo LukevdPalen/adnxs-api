@@ -1,13 +1,17 @@
 /**
  * Created by Luke on 01/05/15.
  */
-import * as rp from 'request-promise';
-import {responseContainsError, handleErrorResponse} from './utils/ErrorHandlers';
+import request from 'request';
+import
+{RequestError, StatusCodeError, responseContainsError, clientError}
+    from './utils/ErrorHandlers';
+import {Promise} from 'bluebird';
 
 /**
  * AppNexus Transport class.
  * @class Transport
- * @classdesc The transport is responsible for handling al request to the AppNexus api service
+ * @classdesc The transport is responsible for handling all
+ *            request to the AppNexus api service
  */
 class Transport {
   /**
@@ -76,6 +80,34 @@ class Transport {
     return this.request('DELETE', endpoint, args);
   }
 
+  requestPromise(options) {
+    return new Promise((resolve, reject) => {
+
+      request(options, (err, response, body) => {
+        if (err) {
+          reject(new RequestError(err));
+
+        } else if (clientError(response)) {
+          var msg = (body.response && body.response.error) ?
+              body.response.error : response.statusMessage;
+
+          reject(new StatusCodeError(response.statusCode, msg));
+
+        } else if (responseContainsError(body)) {
+          reject(new RequestError(Error(body.response.error)));
+
+        } else if (response.statusCode >= 500) {
+          reject(new StatusCodeError(response.statusCode,
+                                     response.statusMessage));
+
+        } else {
+          resolve([body, response]);
+        }
+
+      });
+    });
+  }
+
   /**
    * Preform a the actual request
    *
@@ -107,12 +139,8 @@ class Transport {
       };
     }
 
-    return rp(payload)
+    return this.requestPromise(payload)
         .then((body)=> {
-          if (responseContainsError(body)) {
-            throw handleErrorResponse(body);
-          }
-
           return body.response;
         });
   }

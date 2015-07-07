@@ -1,28 +1,58 @@
 /*jshint camelcase: false */
 
 /**
- * Created by Luke on 01/05/15.
+ * Created by LukevdPalen on 01/05/15.
  */
+import * as _ from 'lodash';
 
 export function responseContainsError(body) {
-  return body.response.status !== 'OK';
+  'use strict';
+  return _.isObject(body) &&
+      body.response &&
+      body.response.status &&
+      body.response.status !== 'OK';
 }
 
-export function wrapAppnexusError(body) {
-  var error = new Error(body && body.response && body.response.error);
-  error.error_id = body && body.response && body.response.error_id;
+export function wrapError(error) {
+  'use strict';
 
+  error.message = `${error.statusCode} - ${error.response.error ||
+                                           error.response.statusMessage}`;
   return error;
 }
 
-export function handleErrorResponse(body) {
-  var error = wrapAppnexusError(body);
+export function ErrorResponse(body) {
+  'use strict';
 
-  //if (error.error_id) {
-  //    //eventEmitter.emit(error.error_id, body.response);
-  //}
-  //return callback(error);
-
+  var error = wrapError(body);
   return error;
 }
 
+export function clientError(response) {
+  'use strict';
+
+  return response.statusCode >= 400 &&  response.statusCode < 500;
+}
+
+export class RequestError extends Error {
+
+  constructor(cause) {
+    super();
+
+    this.name = 'RequestError';
+    this.message = String(cause);
+    this.cause = cause;
+
+  }
+}
+
+export class StatusCodeError extends Error {
+
+  constructor(statusCode, message) {
+    super();
+    this.name = 'StatusCodeError';
+    this.statusCode = statusCode;
+    this.message = statusCode + ' - ' + message;
+
+  }
+}

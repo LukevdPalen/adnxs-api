@@ -4,6 +4,7 @@
 import endpoints from './Endpoints';
 import Transport from './Transport';
 import {RateLimiter} from 'limiter';
+import {Promise} from 'bluebird';
 
 /** @constant {number} */
 const MAX_AUTH_PERIOD = 300000;
@@ -106,7 +107,10 @@ class Client extends Transport {
    * @returns {boolean} token expired
    */
   isExpired(ts = 0) {
-    var timestamp = this.options.token && this.options.token._ts ? this.options.token._ts : ts;
+    var timestamp = this.options.token &&
+                    this.options.token._ts ?
+                    this.options.token._ts : ts;
+
     return timestamp + TOKEN_LIFETIME <= +new Date();
   }
 
@@ -164,7 +168,9 @@ class Client extends Transport {
     return this.rateLimiter(method, endpoint)
         .then(() => {
           // check if token is still valid
-          if (endpoint !== endpoints.AUTHENTICATION_SERVICE && this.isExpired()) {
+          if (endpoint !== endpoints.AUTHENTICATION_SERVICE &&
+                           this.isExpired()) {
+
             return this.refreshToken()
                 .then(super.request(...args));
           }

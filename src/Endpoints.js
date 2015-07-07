@@ -1,3 +1,4 @@
+/*jslint maxlen: 500 */
 /**
  * Created by Luke on 01/05/15.
  */
