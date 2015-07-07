@@ -94,7 +94,7 @@ class Transport {
           reject(new StatusCodeError(response.statusCode, msg));
 
         } else if (responseContainsError(body)) {
-          reject(new RequestError(Error(body.response.error)));
+          reject(new RequestError(Error(body.error)));
 
         } else if (response.statusCode >= 500) {
           reject(new StatusCodeError(response.statusCode,
@@ -140,7 +140,7 @@ class Transport {
     }
 
     return this.requestPromise(payload)
-        .then((body)=> {
+        .then(([body]) => {
           return body.response;
         });
   }
