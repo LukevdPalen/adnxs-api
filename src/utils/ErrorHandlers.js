@@ -3,7 +3,7 @@
 /**
  * Created by LukevdPalen on 01/05/15.
  */
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 export function responseContainsError(body) {
   'use strict';
