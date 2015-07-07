@@ -70,7 +70,7 @@ class Client extends Transport {
   authorize(username, password) {
 
     if (!username || !password) {
-      throw Error('Authorization credentials are missing!');
+      throw new Error('Authorization credentials are missing!');
     }
 
     const data = {auth: {username, password}};
@@ -94,7 +94,7 @@ class Client extends Transport {
    */
   refreshToken() {
     if (!credentials.username || !credentials.password) {
-      throw Error('Authorization credentials are missing!');
+      throw new Error('Authorization credentials are missing!');
     }
 
     return this.authorize(credentials.username, credentials.password);

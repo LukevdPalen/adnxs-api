@@ -43,16 +43,9 @@ describe('Client', () => {
       return expect(authorize).to.eventually.be.fullfilled;
     });
 
-    it('should add token to next request', () => {
-      //var promise = client.get(endpoints.USER_SERVICE);
-
-      authorize.then(()=> console.log(client));
+    it('should throw an error when credentials are missing', () => {
+      return expect(client.authorize).to.throw(Error, 'Authorization credentials are missing!');
     });
-
-    //it('should throw an error when credentials are missing', () => {
-    //    authorize = client.authorize();
-    //    return expect(client.authorize()).to.throw(Error);
-    //});
   });
 
   describe('RateLimit', () => {
