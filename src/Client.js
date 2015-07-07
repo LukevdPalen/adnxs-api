@@ -42,16 +42,19 @@ class Client extends Transport {
    * Client constructor.
    *
    * @constructs Client
-   * @params {string} [apiBase=http://api.appnexus.com] - default api domain
+   * @params {string} [apiBase=https://api.appnexus.com] - default api domain
+   * @params {string} [proxy=null] - proxy url
+   * @params {object} [limits={}] - rate limits
    */
-  constructor(apiBase = 'http://api.appnexus.com',
+  constructor(apiBase = 'https://api.appnexus.com',
+              proxy = null,
               limits = {
                 write: MAX_WRITE_PER_PERIOD,
                 read: MAX_READ_PER_PERIOD,
                 auth: MAX_AUTH_PER_PERIOD
               }) {
     super();
-    this.options = {apiBase, limits};
+    this.options = {apiBase, limits, proxy};
 
     /* Set limiters */
     this.writeLimiter = new RateLimiter(limits.write, MAX_WRITE_PERIOD);
@@ -73,13 +76,13 @@ class Client extends Transport {
       throw new Error('Authorization credentials are missing!');
     }
 
-    const data = {auth: {username, password}};
+    credentials =  {username, password};
 
     if (this.options.token) {
       delete this.options.token;
     }
 
-    return this.post(endpoints.AUTHENTICATION_SERVICE, data)
+    return this.post(endpoints.AUTHENTICATION_SERVICE, {auth: credentials})
         .then((response) => {
           this.options.token = {value: response.token, _ts: +new Date()};
           return response.token;

@@ -7,10 +7,12 @@ import * as _ from 'lodash';
 
 export function responseContainsError(body) {
   'use strict';
+
   return _.isObject(body) &&
       body.response &&
-      body.response.status &&
-      body.response.status !== 'OK';
+        (!body.response.status ||
+          (body.response.status &&
+          body.response.status !== 'OK'));
 }
 
 export function wrapError(error) {
@@ -38,7 +40,6 @@ export class RequestError extends Error {
 
   constructor(cause) {
     super();
-
     this.name = 'RequestError';
     this.message = String(cause);
     this.cause = cause;

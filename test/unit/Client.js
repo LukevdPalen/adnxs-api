@@ -10,12 +10,12 @@ var client;
 describe('Client', () => {
 
   beforeEach(() => {
-    client = new Client('http://sand.api.appnexus.com');
+    client = new Client();
   });
 
   describe('options', () => {
     it('should use the sandbox', () => {
-      return expect(client.options.apiBase).to.equals('http://sand.api.appnexus.com');
+      return expect(client.options.apiBase).to.equals('https://api.appnexus.com');
     });
   });
 
@@ -51,7 +51,7 @@ describe('Client', () => {
   describe('RateLimit', () => {
 
     beforeEach(() => {
-      client = new Client(null, {auth: 1, write: 2, read: 3});
+      client = new Client(null, null, {auth: 1, write: 2, read: 3});
     });
 
     it('should use the custom write limits', () => {

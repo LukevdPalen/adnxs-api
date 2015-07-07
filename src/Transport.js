@@ -88,13 +88,16 @@ class Transport {
           reject(new RequestError(err));
 
         } else if (clientError(response)) {
-          var msg = (body.response && body.response.error) ?
+          let msg = (body.response && body.response.error) ?
               body.response.error : response.statusMessage;
 
           reject(new StatusCodeError(response.statusCode, msg));
 
         } else if (responseContainsError(body)) {
-          reject(new RequestError(Error(body.error)));
+          let msg = (body.response && body.response.error) ?
+              body.response.error : response.statusMessage;
+
+          reject(new RequestError(Error(msg)));
 
         } else if (response.statusCode >= 500) {
           reject(new StatusCodeError(response.statusCode,
@@ -125,6 +128,10 @@ class Transport {
       method,
       uri: this.options.apiBase + endpoint
     };
+
+    if (this.options.proxy) {
+      payload.proxy = this.options.proxy;
+    }
 
     if (method === 'GET') {
       payload.json = true;
