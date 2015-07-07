@@ -1,12 +1,12 @@
-var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } };
-
-var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
+var _get = function get(_x10, _x11, _x12) { var _again = true; _function: while (_again) { var object = _x10, property = _x11, receiver = _x12; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x10 = parent; _x11 = property; _x12 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
-var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
 
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('limiter'), require('bluebird'), require('request'), require('lodash')) : typeof define === 'function' && define.amd ? define(['exports', 'limiter', 'bluebird', 'request', 'lodash'], factory) : factory(global['null'] = {}, global._limiter, global.bluebird, global.request, global.lodash);
@@ -135,13 +135,14 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== 'fun
    */
   function responseContainsError(body) {
     'use strict';
-    return lodash.isObject(body) && body.response && body.response.status && body.response.status !== 'OK';
+
+    return lodash.isObject(body) && body.response && (!body.response.status || body.response.status && body.response.status !== 'OK');
   }
 
   function wrapError(error) {
     'use strict';
 
-    error.message = '' + error.statusCode + ' - ' + (error.response.error || error.response.statusMessage);
+    error.message = error.statusCode + ' - ' + (error.response.error || error.response.statusMessage);
     return error;
   }
 
@@ -162,15 +163,10 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== 'fun
     function RequestError(cause) {
       _classCallCheck(this, RequestError);
 
-      var _this = new _Error();
-
-      _this.__proto__ = RequestError.prototype;
-
-      _this.name = 'RequestError';
-      _this.message = String(cause);
-      _this.cause = cause;
-
-      return _this;
+      _get(Object.getPrototypeOf(RequestError.prototype), 'constructor', this).call(this);
+      this.name = 'RequestError';
+      this.message = String(cause);
+      this.cause = cause;
     }
 
     _inherits(RequestError, _Error);
@@ -182,15 +178,10 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== 'fun
     function StatusCodeError(statusCode, message) {
       _classCallCheck(this, StatusCodeError);
 
-      var _this2 = new _Error2();
-
-      _this2.__proto__ = StatusCodeError.prototype;
-
-      _this2.name = 'StatusCodeError';
-      _this2.statusCode = statusCode;
-      _this2.message = statusCode + ' - ' + message;
-
-      return _this2;
+      _get(Object.getPrototypeOf(StatusCodeError.prototype), 'constructor', this).call(this);
+      this.name = 'StatusCodeError';
+      this.statusCode = statusCode;
+      this.message = statusCode + ' - ' + message;
     }
 
     _inherits(StatusCodeError, _Error2);
@@ -302,7 +293,9 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== 'fun
 
               reject(new StatusCodeError(response.statusCode, msg));
             } else if (responseContainsError(body)) {
-              reject(new RequestError(Error(body.error)));
+              var msg = body.response && body.response.error ? body.response.error : response.statusMessage;
+
+              reject(new RequestError(Error(msg)));
             } else if (response.statusCode >= 500) {
               reject(new StatusCodeError(response.statusCode, response.statusMessage));
             } else {
@@ -331,6 +324,10 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== 'fun
           method: method,
           uri: this.options.apiBase + endpoint
         };
+
+        if (this.options.proxy) {
+          payload.proxy = this.options.proxy;
+        }
 
         if (method === 'GET') {
           payload.json = true;
@@ -401,21 +398,24 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== 'fun
      * Client constructor.
      *
      * @constructs Client
-     * @params {string} [apiBase=http://api.appnexus.com] - default api domain
+     * @params {string} [apiBase=https://api.appnexus.com] - default api domain
+     * @params {string} [proxy=null] - proxy url
+     * @params {object} [limits={}] - rate limits
      */
 
     function Client() {
-      var apiBase = arguments[0] === undefined ? 'http://api.appnexus.com' : arguments[0];
-      var limits = arguments[1] === undefined ? {
+      var apiBase = arguments[0] === undefined ? 'https://api.appnexus.com' : arguments[0];
+      var proxy = arguments[1] === undefined ? null : arguments[1];
+      var limits = arguments[2] === undefined ? {
         write: MAX_WRITE_PER_PERIOD,
         read: MAX_READ_PER_PERIOD,
         auth: MAX_AUTH_PER_PERIOD
-      } : arguments[1];
+      } : arguments[2];
 
       _classCallCheck(this, Client);
 
       _get(Object.getPrototypeOf(Client.prototype), 'constructor', this).call(this);
-      this.options = { apiBase: apiBase, limits: limits };
+      this.options = { apiBase: apiBase, limits: limits, proxy: proxy };
 
       /* Set limiters */
       this.writeLimiter = new _limiter.RateLimiter(limits.write, MAX_WRITE_PERIOD);
@@ -437,20 +437,20 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== 'fun
        * @returns {Promise<String, Error>} AppNexus Access Token
        */
       value: function authorize(username, password) {
-        var _this4 = this;
+        var _this = this;
 
         if (!username || !password) {
-          throw Error('Authorization credentials are missing!');
+          throw new Error('Authorization credentials are missing!');
         }
 
-        var data = { auth: { username: username, password: password } };
+        credentials = { username: username, password: password };
 
         if (this.options.token) {
           delete this.options.token;
         }
 
-        return this.post(Endpoints.AUTHENTICATION_SERVICE, data).then(function (response) {
-          _this4.options.token = { value: response.token, _ts: +new Date() };
+        return this.post(Endpoints.AUTHENTICATION_SERVICE, { auth: credentials }).then(function (response) {
+          _this.options.token = { value: response.token, _ts: +new Date() };
           return response.token;
         });
       }
@@ -465,7 +465,7 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== 'fun
        */
       value: function refreshToken() {
         if (!credentials.username || !credentials.password) {
-          throw Error('Authorization credentials are missing!');
+          throw new Error('Authorization credentials are missing!');
         }
 
         return this.authorize(credentials.username, credentials.password);
@@ -499,17 +499,17 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== 'fun
        * @returns {Promise<Number, Error>} Number of request left
        */
       value: function rateLimiter(method, endpoint) {
-        var _this5 = this;
+        var _this2 = this;
 
         return new bluebird.Promise(function (resolve, reject) {
           var limiter = null;
 
           if (endpoint === Endpoints.AUTHENTICATION_SERVICE) {
-            limiter = _this5.authLimiter;
+            limiter = _this2.authLimiter;
           } else if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
-            limiter = _this5.writeLimiter;
+            limiter = _this2.writeLimiter;
           } else if (method === 'GET') {
-            limiter = _this5.readLimiter;
+            limiter = _this2.readLimiter;
           } else {
             return resolve();
           }
@@ -541,22 +541,20 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== 'fun
        * @returns {Promise<Object, Error>} Response body
        */
       value: function request() {
-        var _this6 = this;
+        var _this3 = this;
 
         for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
           args[_key] = arguments[_key];
         }
-
-        var _this3 = this;
 
         var method = args[0];
         var endpoint = args[1];
 
         return this.rateLimiter(method, endpoint).then(function () {
           // check if token is still valid
-          if (endpoint !== Endpoints.AUTHENTICATION_SERVICE && _this6.isExpired()) {
+          if (endpoint !== Endpoints.AUTHENTICATION_SERVICE && _this3.isExpired()) {
 
-            return _this6.refreshToken().then(_get(Object.getPrototypeOf(Client.prototype), 'request', _this3).apply(_this3, args));
+            return _this3.refreshToken().then(_get(Object.getPrototypeOf(Client.prototype), 'request', _this3).apply(_this3, args));
           }
 
           return _get(Object.getPrototypeOf(Client.prototype), 'request', _this3).apply(_this3, args);
