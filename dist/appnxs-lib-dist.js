@@ -9,11 +9,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
 
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('limiter'), require('bluebird'), require('request'), require('lodash')) : typeof define === 'function' && define.amd ? define(['exports', 'limiter', 'bluebird', 'request', 'lodash'], factory) : factory(global['null'] = {}, global._limiter, global.bluebird, global.request, global.lodash);
-})(this, function (exports, _limiter, bluebird, request, lodash) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('limiter'), require('bluebird'), require('request'), require('lodash')) : typeof define === 'function' && define.amd ? define(['exports', 'limiter', 'bluebird', 'request', 'lodash'], factory) : factory(global['null'] = {}, global._limiter, global.bluebird, global.request, global._);
+})(this, function (exports, _limiter, bluebird, request, _) {
   'use strict';
 
   request = 'default' in request ? request['default'] : request;
+  _ = 'default' in _ ? _['default'] : _;
 
   /*jslint maxlen: 500 */
   /**
@@ -136,7 +137,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== 'function' 
   function responseContainsError(body) {
     'use strict';
 
-    return lodash.isObject(body) && body.response && (!body.response.status || body.response.status && body.response.status !== 'OK');
+    return _.isObject(body) && body.response && (!body.response.status || body.response.status && body.response.status !== 'OK');
   }
 
   function wrapError(error) {
