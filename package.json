@@ -1,6 +1,6 @@
 {
   "name": "adnxs-api",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Another AppNexus API",
   "main": "dist/appnxs-lib-dist.js",
   "scripts": {
@@ -11,13 +11,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/freshfruitdigital/adnxs-api.git"
+    "url": "https://github.com/LukevdPalen/adnxs-api.git"
   },
   "keywords": [
     "AppNexus",
     "API"
   ],
-  "author": "Luke van der Palen <luke.vanderpalen@fresh-fruit.com>",
+  "author": "Luke van der Palen <lukevdpalen@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "babel": "^5.0.0",
