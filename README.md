@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/freshfruitdigital/adnxs-api.svg?branch=master)](https://travis-ci.org/freshfruitdigital/adnxs-api)
+[![Build Status](https://travis-ci.org/LukevdPalen/adnxs-api.svg?branch=master)](https://travis-ci.org/freshfruitdigital/adnxs-api)
 [![npm version](https://badge.fury.io/js/adnxs-api.svg)](http://badge.fury.io/js/adnxs-api)
 # adnxs-api
 
@@ -32,7 +32,7 @@
 	var endpoints =  require('adnxs-api').endpoints;
 
 	var client = new Client();
-	
+
 	client
 	.authorize('FFD', 'xxxxxxx') // optional
  	.then(function(token){
@@ -44,5 +44,5 @@
 	.catch(function(err){
 		console.log(err.stack)
 	});
-		
+
 ```
