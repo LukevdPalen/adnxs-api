@@ -1,5 +1,7 @@
-[![Build Status](https://travis-ci.org/LukevdPalen/adnxs-api.svg?branch=master)](https://travis-ci.org/LukevdPalen/adnxs-api)
-[![npm version](https://badge.fury.io/js/adnxs-api.svg)](http://badge.fury.io/js/adnxs-api)
+[![Build Status][travis-image]][travis-url]
+[![NPM Version][npm-image]][npm-url]
+[![NPM Downloads][downloads-image]][downloads-url]
+
 # adnxs-api
 
 > adnxs-api is an AppNexus client, source written in es6
@@ -46,3 +48,9 @@
 	});
 
 ```
+[npm-image]: https://badge.fury.io/js/adnxs-api.svg
+[npm-url]: https://npmjs.org/package/adnxs-api
+[downloads-image]: https://img.shields.io/npm/dm/adnxs-api.svg
+[downloads-url]: https://npmjs.org/package/adnxs-api
+[travis-image]: https://travis-ci.org/LukevdPalen/adnxs-api.svg?branch=master
+[travis-url]: https://travis-ci.org/LukevdPalen/adnxs-api
