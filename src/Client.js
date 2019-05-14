@@ -1,10 +1,10 @@
 /**
  * Created by Luke on 01/05/15.
  */
+import { RateLimiter } from 'limiter';
+
 import endpoints from './Endpoints';
 import Transport from './Transport';
-import {RateLimiter} from 'limiter';
-import {Promise} from 'bluebird';
 
 /** @constant {number} */
 const MAX_AUTH_PERIOD = 300000;
@@ -28,7 +28,7 @@ const MAX_AUTH_PER_PERIOD = 10;
 const TOKEN_LIFETIME = 60 * 60 * 1000;
 
 /** @private */
-var credentials = {};
+let credentials = {};
 
 /**
  * AppNexus Client API class.
@@ -37,7 +37,6 @@ var credentials = {};
  * @extends Transport
  */
 class Client extends Transport {
-
   /**
    * Client constructor.
    *
@@ -47,14 +46,14 @@ class Client extends Transport {
    * @params {object} [limits={}] - rate limits
    */
   constructor(apiBase = 'https://api.appnexus.com',
-              proxy = null,
-              limits = {
-                write: MAX_WRITE_PER_PERIOD,
-                read: MAX_READ_PER_PERIOD,
-                auth: MAX_AUTH_PER_PERIOD
-              }) {
+    proxy = null,
+    limits = {
+      write: MAX_WRITE_PER_PERIOD,
+      read: MAX_READ_PER_PERIOD,
+      auth: MAX_AUTH_PER_PERIOD,
+    }) {
     super();
-    this.options = {apiBase, limits, proxy};
+    this.options = { apiBase, limits, proxy };
 
     /* Set limiters */
     this.writeLimiter = new RateLimiter(limits.write, MAX_WRITE_PERIOD);
@@ -70,23 +69,20 @@ class Client extends Transport {
    * @params {string} password - Password
    * @returns {Promise<String, Error>} AppNexus Access Token
    */
-  authorize(username, password) {
-
+  async authorize(username, password) {
     if (!username || !password) {
       throw new Error('Authorization credentials are missing!');
     }
 
-    credentials =  {username, password};
+    credentials = { username, password };
 
     if (this.options.token) {
       delete this.options.token;
     }
 
-    return this.post(endpoints.AUTHENTICATION_SERVICE, {auth: credentials})
-        .then((response) => {
-          this.options.token = {value: response.token, _ts: +new Date()};
-          return response.token;
-        });
+    const response = await this.post(endpoints.AUTHENTICATION_SERVICE, { auth: credentials });
+    this.options.token = { value: response.token, _ts: +new Date() };
+    return response.token;
   }
 
   /**
@@ -110,9 +106,9 @@ class Client extends Transport {
    * @returns {boolean} token expired
    */
   isExpired(ts = 0) {
-    var timestamp = this.options.token &&
-                    this.options.token._ts ?
-                    this.options.token._ts : ts;
+    const timestamp = this.options.token
+                    && this.options.token._ts
+      ? this.options.token._ts : ts;
 
     return timestamp + TOKEN_LIFETIME <= +new Date();
   }
@@ -127,9 +123,8 @@ class Client extends Transport {
    * @returns {Promise<Number, Error>} Number of request left
    */
   rateLimiter(method, endpoint) {
-
     return new Promise((resolve, reject) => {
-      var limiter = null;
+      let limiter = null;
 
       if (endpoint === endpoints.AUTHENTICATION_SERVICE) {
         limiter = this.authLimiter;
@@ -165,21 +160,17 @@ class Client extends Transport {
    * @params {object} [args={}] - arguments
    * @returns {Promise<Object, Error>} Response body
    */
-  request(...args) {
-    var [method, endpoint] = args;
+  async request(...args) {
+    const [method, endpoint] = args;
 
-    return this.rateLimiter(method, endpoint)
-        .then(() => {
-          // check if token is still valid
-          if (endpoint !== endpoints.AUTHENTICATION_SERVICE &&
-                           this.isExpired()) {
-
-            return this.refreshToken()
-                .then(super.request(...args));
-          }
-
-          return super.request(...args);
-        });
+    await this.rateLimiter(method, endpoint);
+    // check if token is still valid
+    if (endpoint !== endpoints.AUTHENTICATION_SERVICE
+      && this.isExpired()) {
+      return this.refreshToken()
+        .then(super.request(...args));
+    }
+    return super.request(...args);
   }
 }
 

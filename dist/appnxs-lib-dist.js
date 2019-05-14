@@ -1,27 +1,16 @@
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x10, _x11, _x12) { var _again = true; _function: while (_again) { var object = _x10, property = _x11, receiver = _x12; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x10 = parent; _x11 = property; _x12 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('limiter'), require('bluebird'), require('request'), require('lodash')) : typeof define === 'function' && define.amd ? define(['exports', 'limiter', 'bluebird', 'request', 'lodash'], factory) : factory(global['null'] = {}, global._limiter, global.bluebird, global.request, global._);
-})(this, function (exports, _limiter, bluebird, request, _) {
-  'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('limiter'), require('request')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'limiter', 'request'], factory) :
+  (global = global || self, factory(global.appnxs = {}, global.limiter, global.request));
+}(this, function (exports, limiter, request) { 'use strict';
 
-  request = 'default' in request ? request['default'] : request;
-  _ = 'default' in _ ? _['default'] : _;
+  request = request && request.hasOwnProperty('default') ? request['default'] : request;
 
-  /*jslint maxlen: 500 */
   /**
    * Created by Luke on 01/05/15.
    */
 
-  var endpoints = {
+  const endpoints = {
 
     /**
      * source: https://wiki.appnexus.com/display/api/API+Services
@@ -121,91 +110,58 @@ function _inherits(subClass, superClass) { if (typeof superClass !== 'function' 
     USER_GROUP_PATTERN_SERVICE: '/usergroup-pattern',
     USER_SERVICE: '/user',
     USER_VERIFICATION_SERVICE: '/user-verification',
-    VISIBILITY_PROFILE_SERVICE: '/visibility-profile'
-
+    VISIBILITY_PROFILE_SERVICE: '/visibility-profile',
   };
-
-  var Endpoints = endpoints;
-
-  exports.endpoints = Endpoints;
-
-  /*jshint camelcase: false */
 
   /**
    * Created by LukevdPalen on 01/05/15.
    */
+
   function responseContainsError(body) {
-    'use strict';
-
-    return _.isObject(body) && body.response && (!body.response.status || body.response.status && body.response.status !== 'OK');
-  }
-
-  function wrapError(error) {
-    'use strict';
-
-    error.message = error.statusCode + ' - ' + (error.response.error || error.response.statusMessage);
-    return error;
-  }
-
-  function ErrorResponse(body) {
-    'use strict';
-
-    var error = wrapError(body);
-    return error;
+    return body === Object(body)
+        && body.response
+          && (!body.response.status
+            || (body.response.status
+            && body.response.status !== 'OK'));
   }
 
   function clientError(response) {
-    'use strict';
-
     return response.statusCode >= 400 && response.statusCode < 500;
   }
 
-  var RequestError = (function (_Error) {
-    function RequestError(cause) {
-      _classCallCheck(this, RequestError);
-
-      _get(Object.getPrototypeOf(RequestError.prototype), 'constructor', this).call(this);
+  class RequestError extends Error {
+    constructor(cause) {
+      super();
       this.name = 'RequestError';
       this.message = String(cause);
       this.cause = cause;
     }
+  }
 
-    _inherits(RequestError, _Error);
-
-    return RequestError;
-  })(Error);
-
-  var StatusCodeError = (function (_Error2) {
-    function StatusCodeError(statusCode, message) {
-      _classCallCheck(this, StatusCodeError);
-
-      _get(Object.getPrototypeOf(StatusCodeError.prototype), 'constructor', this).call(this);
+  class StatusCodeError extends Error {
+    constructor(statusCode, message) {
+      super();
       this.name = 'StatusCodeError';
       this.statusCode = statusCode;
-      this.message = statusCode + ' - ' + message;
+      this.message = `${statusCode} - ${message}`;
     }
+  }
 
-    _inherits(StatusCodeError, _Error2);
-
-    return StatusCodeError;
-  })(Error);
+  /* eslint class-methods-use-this: off */
 
   /**
-   * Created by Luke on 01/05/15.
+   * AppNexus Transport class.
+   * @class Transport
+   * @classdesc The transport is responsible for handling all
+   *            request to the AppNexus api service
    */
-
-  var Transport = (function () {
+  class Transport {
     /**
      * Transport constructor.
      * @constructs Transport
      * @params {object} [options={}] - transport options
      */
-
-    function Transport() {
-      var options = arguments[0] === undefined ? { apiBase: '/' } : arguments[0];
-
-      _classCallCheck(this, Transport);
-
+    constructor(options = { apiBase: '/' }) {
       /**
        * Transport options
        * @member Client#options
@@ -213,178 +169,149 @@ function _inherits(subClass, superClass) { if (typeof superClass !== 'function' 
       this.options = options;
     }
 
-    _createClass(Transport, [{
-      key: 'get',
+    /**
+     * Preform a GET request
+     *
+     * @method get
+     * @see {@link uri} for possible endpoints.
+     * @params {string} endpoint - api endpoint
+     * @params {object} [args={}] - arguments
+     * @returns {Promise<Object, Error>} Response body
+     * */
+    get(endpoint, args = {}) {
+      return this.request('GET', endpoint, args);
+    }
 
-      /**
-       * Preform a GET request
-       *
-       * @method get
-       * @see {@link uri} for possible endpoints.
-       * @params {string} endpoint - api endpoint
-       * @params {object} [args={}] - arguments
-       * @returns {Promise<Object, Error>} Response body
-       **/
-      value: function get(endpoint) {
-        var args = arguments[1] === undefined ? {} : arguments[1];
+    /**
+     * Preform a PUT update request
+     *
+     * @method put
+     * @see {@link uri} for possible endpoints.
+     * @params {string} endpoint - api endpoint
+     * @params {object} [args={}] - arguments
+     * @returns {Promise<Object, Error>} Response body
+     * */
+    put(endpoint, args = {}) {
+      return this.request('PUT', endpoint, args);
+    }
 
-        return this.request('GET', endpoint, args);
-      }
-    }, {
-      key: 'put',
+    /**
+     * Preform a POST request
+     *
+     * @method post
+     * @see {@link uri} for possible endpoints.
+     * @params {string} endpoint - api endpoint
+     * @params {object} [args={}] - arguments
+     * @returns {Promise<Object, Error>} Response body
+     * */
+    post(endpoint, args = {}) {
+      return this.request('POST', endpoint, args);
+    }
 
-      /**
-       * Preform a PUT update request
-       *
-       * @method put
-       * @see {@link uri} for possible endpoints.
-       * @params {string} endpoint - api endpoint
-       * @params {object} [args={}] - arguments
-       * @returns {Promise<Object, Error>} Response body
-       **/
-      value: function put(endpoint) {
-        var args = arguments[1] === undefined ? {} : arguments[1];
+    /**
+     * Preform a DELETE request
+     *
+     * @method delete
+     * @see {@link uri} for possible endpoints.
+     * @params {string} endpoint - api endpoint
+     * @params {object} [args={}] - arguments
+     * @returns {Promise<Object, Error>} Response body
+     * */
+    delete(endpoint, args = {}) {
+      return this.request('DELETE', endpoint, args);
+    }
 
-        return this.request('PUT', endpoint, args);
-      }
-    }, {
-      key: 'post',
+    requestPromise(options) {
+      return new Promise((resolve, reject) => {
+        request(options, (err, response, body) => {
+          if (err) {
+            reject(new RequestError(err));
+          } else if (clientError(response)) {
+            const msg = (body.response && body.response.error)
+              ? body.response.error : response.statusMessage;
 
-      /**
-       * Preform a POST request
-       *
-       * @method post
-       * @see {@link uri} for possible endpoints.
-       * @params {string} endpoint - api endpoint
-       * @params {object} [args={}] - arguments
-       * @returns {Promise<Object, Error>} Response body
-       **/
-      value: function post(endpoint) {
-        var args = arguments[1] === undefined ? {} : arguments[1];
+            reject(new StatusCodeError(response.statusCode, msg));
+          } else if (responseContainsError(body)) {
+            const msg = (body.response && body.response.error)
+              ? body.response.error : response.statusMessage;
 
-        return this.request('POST', endpoint, args);
-      }
-    }, {
-      key: 'delete',
-
-      /**
-       * Preform a DELETE request
-       *
-       * @method delete
-       * @see {@link uri} for possible endpoints.
-       * @params {string} endpoint - api endpoint
-       * @params {object} [args={}] - arguments
-       * @returns {Promise<Object, Error>} Response body
-       **/
-      value: function _delete(endpoint) {
-        var args = arguments[1] === undefined ? {} : arguments[1];
-
-        return this.request('DELETE', endpoint, args);
-      }
-    }, {
-      key: 'requestPromise',
-      value: function requestPromise(options) {
-        return new bluebird.Promise(function (resolve, reject) {
-
-          request(options, function (err, response, body) {
-            if (err) {
-              reject(new RequestError(err));
-            } else if (clientError(response)) {
-              var msg = body.response && body.response.error ? body.response.error : response.statusMessage;
-
-              reject(new StatusCodeError(response.statusCode, msg));
-            } else if (responseContainsError(body)) {
-              var msg = body.response && body.response.error ? body.response.error : response.statusMessage;
-
-              reject(new RequestError(Error(msg)));
-            } else if (response.statusCode >= 500) {
-              reject(new StatusCodeError(response.statusCode, response.statusMessage));
-            } else {
-              resolve([body, response]);
-            }
-          });
+            reject(new RequestError(Error(msg)));
+          } else if (response.statusCode >= 500) {
+            reject(new StatusCodeError(response.statusCode,
+              response.statusMessage));
+          } else {
+            resolve([body, response]);
+          }
         });
+      });
+    }
+
+    /**
+     * Preform a the actual request
+     *
+     * @method request
+     * @private
+     * @see {@link uri} for possible endpoints.
+     * @params {string} method - Request method
+     * @params {string} endpoint - api endpoint
+     * @params {object} [args={}] - arguments
+     * @returns {Promise<Object, Error>} Response body
+     * */
+    request(method, endpoint, args) {
+      const payload = {
+        method,
+        uri: this.options.apiBase + endpoint,
+      };
+
+      if (this.options.proxy) {
+        payload.proxy = this.options.proxy;
       }
-    }, {
-      key: 'request',
 
-      /**
-       * Preform a the actual request
-       *
-       * @method request
-       * @private
-       * @see {@link uri} for possible endpoints.
-       * @params {string} method - Request method
-       * @params {string} endpoint - api endpoint
-       * @params {object} [args={}] - arguments
-       * @returns {Promise<Object, Error>} Response body
-       **/
-      value: function request(method, endpoint, args) {
+      if (method === 'GET') {
+        payload.json = true;
+        payload.qs = args;
+      } else {
+        payload.json = args;
+      }
 
-        var payload = {
-          method: method,
-          uri: this.options.apiBase + endpoint
+      if (this.options.token && this.options.token.value) {
+        payload.headers = {
+          Authorization: this.options.token.value,
         };
-
-        if (this.options.proxy) {
-          payload.proxy = this.options.proxy;
-        }
-
-        if (method === 'GET') {
-          payload.json = true;
-          payload.qs = args;
-        } else {
-          payload.json = args;
-        }
-
-        if (this.options.token && this.options.token.value) {
-          payload.headers = {
-            Authorization: this.options.token.value
-          };
-        }
-
-        return this.requestPromise(payload).then(function (_ref) {
-          var _ref2 = _slicedToArray(_ref, 1);
-
-          var body = _ref2[0];
-
-          return body.response;
-        });
       }
-    }]);
 
-    return Transport;
-  })();
-
-  var _Transport = Transport;
-
-  exports.Transport = _Transport;
+      return this.requestPromise(payload)
+        .then(([body]) => body.response);
+    }
+  }
 
   /**
    * Created by Luke on 01/05/15.
    */
-  var MAX_AUTH_PERIOD = 300000;
 
   /** @constant {number} */
-  var MAX_READ_PERIOD = 60000;
+  const MAX_AUTH_PERIOD = 300000;
 
   /** @constant {number} */
-  var MAX_WRITE_PERIOD = 60000;
+  const MAX_READ_PERIOD = 60000;
 
   /** @constant {number} */
-  var MAX_READ_PER_PERIOD = 100;
+  const MAX_WRITE_PERIOD = 60000;
 
   /** @constant {number} */
-  var MAX_WRITE_PER_PERIOD = 60;
+  const MAX_READ_PER_PERIOD = 100;
 
   /** @constant {number} */
-  var MAX_AUTH_PER_PERIOD = 10;
+  const MAX_WRITE_PER_PERIOD = 60;
 
   /** @constant {number} */
-  var TOKEN_LIFETIME = 60 * 60 * 1000;
+  const MAX_AUTH_PER_PERIOD = 10;
+
+  /** @constant {number} */
+  const TOKEN_LIFETIME = 60 * 60 * 1000;
 
   /** @private */
-  var credentials = {};
+  let credentials = {};
 
   /**
    * AppNexus Client API class.
@@ -392,9 +319,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== 'function' 
    * @class Client
    * @extends Transport
    */
-
-  var Client = (function (_Transport2) {
-
+  class Client extends Transport {
     /**
      * Client constructor.
      *
@@ -403,175 +328,144 @@ function _inherits(subClass, superClass) { if (typeof superClass !== 'function' 
      * @params {string} [proxy=null] - proxy url
      * @params {object} [limits={}] - rate limits
      */
-
-    function Client() {
-      var apiBase = arguments[0] === undefined ? 'https://api.appnexus.com' : arguments[0];
-      var proxy = arguments[1] === undefined ? null : arguments[1];
-      var limits = arguments[2] === undefined ? {
+    constructor(apiBase = 'https://api.appnexus.com',
+      proxy = null,
+      limits = {
         write: MAX_WRITE_PER_PERIOD,
         read: MAX_READ_PER_PERIOD,
-        auth: MAX_AUTH_PER_PERIOD
-      } : arguments[2];
-
-      _classCallCheck(this, Client);
-
-      _get(Object.getPrototypeOf(Client.prototype), 'constructor', this).call(this);
-      this.options = { apiBase: apiBase, limits: limits, proxy: proxy };
+        auth: MAX_AUTH_PER_PERIOD,
+      }) {
+      super();
+      this.options = { apiBase, limits, proxy };
 
       /* Set limiters */
-      this.writeLimiter = new _limiter.RateLimiter(limits.write, MAX_WRITE_PERIOD);
-      this.readLimiter = new _limiter.RateLimiter(limits.read, MAX_READ_PERIOD);
-      this.authLimiter = new _limiter.RateLimiter(limits.auth, MAX_AUTH_PERIOD);
+      this.writeLimiter = new limiter.RateLimiter(limits.write, MAX_WRITE_PERIOD);
+      this.readLimiter = new limiter.RateLimiter(limits.read, MAX_READ_PERIOD);
+      this.authLimiter = new limiter.RateLimiter(limits.auth, MAX_AUTH_PERIOD);
     }
 
-    _inherits(Client, _Transport2);
+    /**
+     * Authorize client function
+     *
+     * @method authorize
+     * @params {string} username - Username
+     * @params {string} password - Password
+     * @returns {Promise<String, Error>} AppNexus Access Token
+     */
+    async authorize(username, password) {
+      if (!username || !password) {
+        throw new Error('Authorization credentials are missing!');
+      }
 
-    _createClass(Client, [{
-      key: 'authorize',
+      credentials = { username, password };
 
-      /**
-       * Authorize client function
-       *
-       * @method authorize
-       * @params {string} username - Username
-       * @params {string} password - Password
-       * @returns {Promise<String, Error>} AppNexus Access Token
-       */
-      value: function authorize(username, password) {
-        var _this = this;
+      if (this.options.token) {
+        delete this.options.token;
+      }
 
-        if (!username || !password) {
-          throw new Error('Authorization credentials are missing!');
+      const response = await this.post(endpoints.AUTHENTICATION_SERVICE, { auth: credentials });
+      this.options.token = { value: response.token, _ts: +new Date() };
+      return response.token;
+    }
+
+    /**
+     * Refresh token
+     **
+     * @method refreshToken
+     * @returns {Promise<String, Error>} AppNexus Access Token
+     */
+    refreshToken() {
+      if (!credentials.username || !credentials.password) {
+        throw new Error('Authorization credentials are missing!');
+      }
+
+      return this.authorize(credentials.username, credentials.password);
+    }
+
+    /**
+     * Checks if request token is not expired
+     **
+     * @isExpired rateLimiter
+     * @returns {boolean} token expired
+     */
+    isExpired(ts = 0) {
+      const timestamp = this.options.token
+                      && this.options.token._ts
+        ? this.options.token._ts : ts;
+
+      return timestamp + TOKEN_LIFETIME <= +new Date();
+    }
+
+    /**
+     * Rate limit a request according to specs
+     **
+     * @method rateLimiter
+     * @see {@link uri} for possible endpoints.
+     * @params {string} method - Request method
+     * @params {string} endpoint - api endpoint
+     * @returns {Promise<Number, Error>} Number of request left
+     */
+    rateLimiter(method, endpoint) {
+      return new Promise((resolve, reject) => {
+        let limiter = null;
+
+        if (endpoint === endpoints.AUTHENTICATION_SERVICE) {
+          limiter = this.authLimiter;
+        } else if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
+          limiter = this.writeLimiter;
+        } else if (method === 'GET') {
+          limiter = this.readLimiter;
+        } else {
+          return resolve();
         }
 
-        credentials = { username: username, password: password };
-
-        if (this.options.token) {
-          delete this.options.token;
-        }
-
-        return this.post(Endpoints.AUTHENTICATION_SERVICE, { auth: credentials }).then(function (response) {
-          _this.options.token = { value: response.token, _ts: +new Date() };
-          return response.token;
-        });
-      }
-    }, {
-      key: 'refreshToken',
-
-      /**
-       * Refresh token
-       **
-       * @method refreshToken
-       * @returns {Promise<String, Error>} AppNexus Access Token
-       */
-      value: function refreshToken() {
-        if (!credentials.username || !credentials.password) {
-          throw new Error('Authorization credentials are missing!');
-        }
-
-        return this.authorize(credentials.username, credentials.password);
-      }
-    }, {
-      key: 'isExpired',
-
-      /**
-       * Checks if request token is not expired
-       **
-       * @isExpired rateLimiter
-       * @returns {boolean} token expired
-       */
-      value: function isExpired() {
-        var ts = arguments[0] === undefined ? 0 : arguments[0];
-
-        var timestamp = this.options.token && this.options.token._ts ? this.options.token._ts : ts;
-
-        return timestamp + TOKEN_LIFETIME <= +new Date();
-      }
-    }, {
-      key: 'rateLimiter',
-
-      /**
-       * Rate limit a request according to specs
-       **
-       * @method rateLimiter
-       * @see {@link uri} for possible endpoints.
-       * @params {string} method - Request method
-       * @params {string} endpoint - api endpoint
-       * @returns {Promise<Number, Error>} Number of request left
-       */
-      value: function rateLimiter(method, endpoint) {
-        var _this2 = this;
-
-        return new bluebird.Promise(function (resolve, reject) {
-          var limiter = null;
-
-          if (endpoint === Endpoints.AUTHENTICATION_SERVICE) {
-            limiter = _this2.authLimiter;
-          } else if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
-            limiter = _this2.writeLimiter;
-          } else if (method === 'GET') {
-            limiter = _this2.readLimiter;
-          } else {
-            return resolve();
+        limiter.removeTokens(1, (err, remainingRequests) => {
+          if (err) {
+            return reject(err);
           }
 
-          limiter.removeTokens(1, function (err, remainingRequests) {
-            if (err) {
-              return reject(err);
-            }
-
-            resolve(remainingRequests);
-          });
+          resolve(remainingRequests);
         });
+      });
+    }
+
+    /**
+     * Request client function
+     *
+     * Adds rate limit and ensures refresh token is valid
+     *
+     * @method request
+     * @extends Transport.request
+     * @private
+     * @see {@link uri} for possible endpoints.
+     * @params {string} method - Request method
+     * @params {string} endpoint - api endpoint
+     * @params {object} [args={}] - arguments
+     * @returns {Promise<Object, Error>} Response body
+     */
+    async request(...args) {
+      const [method, endpoint] = args;
+
+      await this.rateLimiter(method, endpoint);
+      // check if token is still valid
+      if (endpoint !== endpoints.AUTHENTICATION_SERVICE
+        && this.isExpired()) {
+        return this.refreshToken()
+          .then(super.request(...args));
       }
-    }, {
-      key: 'request',
-
-      /**
-       * Request client function
-       *
-       * Adds rate limit and ensures refresh token is valid
-       *
-       * @method request
-       * @extends Transport.request
-       * @private
-       * @see {@link uri} for possible endpoints.
-       * @params {string} method - Request method
-       * @params {string} endpoint - api endpoint
-       * @params {object} [args={}] - arguments
-       * @returns {Promise<Object, Error>} Response body
-       */
-      value: function request() {
-        var _this3 = this;
-
-        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-          args[_key] = arguments[_key];
-        }
-
-        var method = args[0];
-        var endpoint = args[1];
-
-        return this.rateLimiter(method, endpoint).then(function () {
-          // check if token is still valid
-          if (endpoint !== Endpoints.AUTHENTICATION_SERVICE && _this3.isExpired()) {
-
-            return _this3.refreshToken().then(_get(Object.getPrototypeOf(Client.prototype), 'request', _this3).apply(_this3, args));
-          }
-
-          return _get(Object.getPrototypeOf(Client.prototype), 'request', _this3).apply(_this3, args);
-        });
-      }
-    }]);
-
-    return Client;
-  })(_Transport);
-
-  var _Client = Client;
-
-  exports.Client = _Client;
+      return super.request(...args);
+    }
+  }
 
   /**
    * Created by Luke on 01/05/15.
    */
-});
-//# sourceMappingURL=./appnxs-lib-dist.js.map
+
+  exports.Client = Client;
+  exports.Transport = Transport;
+  exports.endpoints = endpoints;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+}));
+//# sourceMappingURL=appnxs-lib-dist.js.map

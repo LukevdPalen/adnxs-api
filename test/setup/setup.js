@@ -1,15 +1,19 @@
-module.exports = function() {
+/* eslint no-undef: off */
+
+module.exports = function () {
   global.expect = global.chai.expect;
 
-  beforeEach(function() {
-    this.sandbox = global.sinon.sandbox.create();
-    global.stub = this.sandbox.stub.bind(this.sandbox);
-    global.spy  = this.sandbox.spy.bind(this.sandbox);
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = global.sinon.sandbox.create();
+    global.stub = sandbox.stub.bind(sandbox);
+    global.spy = sandbox.spy.bind(sandbox);
   });
 
-  afterEach(function() {
+  afterEach(() => {
     delete global.stub;
     delete global.spy;
-    this.sandbox.restore();
+    sandbox.restore();
   });
 };
