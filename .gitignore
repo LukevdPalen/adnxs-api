@@ -33,3 +33,5 @@ tmp
 .env
 
 out
+
+dist
