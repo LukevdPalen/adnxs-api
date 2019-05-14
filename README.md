@@ -14,9 +14,10 @@
 
 ### Authorization
 ```javascript
-	var Client =  require('adnxs-api').Client;
+	const { Client } =  require('adnxs-api');
 
-	var client = new Client();
+	const client = new Client();
+
 	client
 	.authorize('FFD', 'xxxxxxx')
 	.then(function(token){
@@ -30,10 +31,9 @@
 
 ### Request all active campaigns
 ```javascript
-	var Client =  require('adnxs-api').Client;
-	var endpoints =  require('adnxs-api').endpoints;
+	const { Client, endpoints } =  require('adnxs-api');
 
-	var client = new Client();
+	const client = new Client();
 
 	client
 	.authorize('FFD', 'xxxxxxx') // optional
