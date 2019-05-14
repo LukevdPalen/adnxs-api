@@ -1,11 +1,13 @@
+/* eslint class-methods-use-this: off */
+
 /**
  * Created by Luke on 01/05/15.
  */
 import request from 'request';
-import
-{RequestError, StatusCodeError, responseContainsError, clientError}
-    from './utils/ErrorHandlers';
-import {Promise} from 'bluebird';
+
+import {
+  RequestError, StatusCodeError, responseContainsError, clientError,
+} from './utils/ErrorHandlers';
 
 /**
  * AppNexus Transport class.
@@ -19,8 +21,7 @@ class Transport {
    * @constructs Transport
    * @params {object} [options={}] - transport options
    */
-  constructor(options = { apiBase: '/'}) {
-
+  constructor(options = { apiBase: '/' }) {
     /**
      * Transport options
      * @member Client#options
@@ -36,7 +37,7 @@ class Transport {
    * @params {string} endpoint - api endpoint
    * @params {object} [args={}] - arguments
    * @returns {Promise<Object, Error>} Response body
-   **/
+   * */
   get(endpoint, args = {}) {
     return this.request('GET', endpoint, args);
   }
@@ -49,7 +50,7 @@ class Transport {
    * @params {string} endpoint - api endpoint
    * @params {object} [args={}] - arguments
    * @returns {Promise<Object, Error>} Response body
-   **/
+   * */
   put(endpoint, args = {}) {
     return this.request('PUT', endpoint, args);
   }
@@ -62,7 +63,7 @@ class Transport {
    * @params {string} endpoint - api endpoint
    * @params {object} [args={}] - arguments
    * @returns {Promise<Object, Error>} Response body
-   **/
+   * */
   post(endpoint, args = {}) {
     return this.request('POST', endpoint, args);
   }
@@ -75,38 +76,32 @@ class Transport {
    * @params {string} endpoint - api endpoint
    * @params {object} [args={}] - arguments
    * @returns {Promise<Object, Error>} Response body
-   **/
+   * */
   delete(endpoint, args = {}) {
     return this.request('DELETE', endpoint, args);
   }
 
   requestPromise(options) {
     return new Promise((resolve, reject) => {
-
       request(options, (err, response, body) => {
         if (err) {
           reject(new RequestError(err));
-
         } else if (clientError(response)) {
-          let msg = (body.response && body.response.error) ?
-              body.response.error : response.statusMessage;
+          const msg = (body.response && body.response.error)
+            ? body.response.error : response.statusMessage;
 
           reject(new StatusCodeError(response.statusCode, msg));
-
         } else if (responseContainsError(body)) {
-          let msg = (body.response && body.response.error) ?
-              body.response.error : response.statusMessage;
+          const msg = (body.response && body.response.error)
+            ? body.response.error : response.statusMessage;
 
           reject(new RequestError(Error(msg)));
-
         } else if (response.statusCode >= 500) {
           reject(new StatusCodeError(response.statusCode,
-                                     response.statusMessage));
-
+            response.statusMessage));
         } else {
           resolve([body, response]);
         }
-
       });
     });
   }
@@ -121,12 +116,11 @@ class Transport {
    * @params {string} endpoint - api endpoint
    * @params {object} [args={}] - arguments
    * @returns {Promise<Object, Error>} Response body
-   **/
+   * */
   request(method, endpoint, args) {
-
-    var payload = {
+    const payload = {
       method,
-      uri: this.options.apiBase + endpoint
+      uri: this.options.apiBase + endpoint,
     };
 
     if (this.options.proxy) {
@@ -142,14 +136,12 @@ class Transport {
 
     if (this.options.token && this.options.token.value) {
       payload.headers = {
-        Authorization: this.options.token.value
+        Authorization: this.options.token.value,
       };
     }
 
     return this.requestPromise(payload)
-        .then(([body]) => {
-          return body.response;
-        });
+      .then(([body]) => body.response);
   }
 }
 

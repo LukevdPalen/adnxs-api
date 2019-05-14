@@ -6,6 +6,4 @@ import Client from './Client';
 import Transport from './Transport';
 import endpoints from './Endpoints';
 
-export { Client  };
-export { Transport };
-export { endpoints };
+export { Client, Transport, endpoints };

@@ -1,4 +1,3 @@
-/*jslint maxlen: 500 */
 /**
  * Created by Luke on 01/05/15.
  */
@@ -103,8 +102,7 @@ const endpoints = {
   USER_GROUP_PATTERN_SERVICE: '/usergroup-pattern',
   USER_SERVICE: '/user',
   USER_VERIFICATION_SERVICE: '/user-verification',
-  VISIBILITY_PROFILE_SERVICE: '/visibility-profile'
-
+  VISIBILITY_PROFILE_SERVICE: '/visibility-profile',
 };
 
 export default endpoints;
