@@ -116,6 +116,7 @@ const endpoints = {
         EVENT_SERVICE: apdRoute('events', transform),
       };
     },
+    BASE: APD_BASE,
   },
 };
 
