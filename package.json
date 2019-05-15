@@ -4,6 +4,7 @@
   "description": "Another AppNexus API",
   "main": "dist/appnxs-lib-dist.js",
   "scripts": {
+    "prepublish": "npm build",
     "test": "jest",
     "build": "rollup -c ",
     "coverage": "jest --coverage"
