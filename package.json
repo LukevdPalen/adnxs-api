@@ -1,9 +1,10 @@
 {
   "name": "adnxs-api",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Another AppNexus API",
   "main": "dist/appnxs-lib-dist.js",
   "scripts": {
+    "prepublish": "npm run build",
     "test": "jest",
     "build": "rollup -c ",
     "coverage": "jest --coverage"
