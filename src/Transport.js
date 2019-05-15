@@ -51,8 +51,8 @@ class Transport {
    * @params {object} [args={}] - arguments
    * @returns {Promise<Object, Error>} Response body
    * */
-  put(endpoint, args = {}) {
-    return this.request('PUT', endpoint, args);
+  put(endpoint, ...args) {
+    return this.request('PUT', endpoint, ...args);
   }
 
   /**
@@ -64,8 +64,8 @@ class Transport {
    * @params {object} [args={}] - arguments
    * @returns {Promise<Object, Error>} Response body
    * */
-  post(endpoint, args = {}) {
-    return this.request('POST', endpoint, args);
+  post(endpoint, ...args) {
+    return this.request('POST', endpoint, ...args);
   }
 
   /**
@@ -77,8 +77,8 @@ class Transport {
    * @params {object} [args={}] - arguments
    * @returns {Promise<Object, Error>} Response body
    * */
-  delete(endpoint, args = {}) {
-    return this.request('DELETE', endpoint, args);
+  delete(endpoint, ...args) {
+    return this.request('DELETE', endpoint, ...args);
   }
 
   requestPromise(options) {
@@ -117,11 +117,13 @@ class Transport {
    * @params {object} [args={}] - arguments
    * @returns {Promise<Object, Error>} Response body
    * */
-  request(method, endpoint, args) {
+  async request(method, endpoint, ...args) {
     const payload = {
       method,
       uri: this.options.apiBase + endpoint,
     };
+
+    const [data = {}, headers = {}, dataType = 'formData'] = args;
 
     if (this.options.proxy) {
       payload.proxy = this.options.proxy;
@@ -129,19 +131,28 @@ class Transport {
 
     if (method === 'GET') {
       payload.json = true;
-      payload.qs = args;
+      payload.qs = data;
+    } else if ('Content-Type' in headers
+        && typeof headers['Content-Type'] === 'string'
+        && headers['Content-Type'] !== 'application/json') {
+      payload[dataType] = data;
     } else {
-      payload.json = args;
+      payload.json = data;
+    }
+
+    if (Object.keys(headers).length) {
+      payload.headers = headers;
     }
 
     if (this.options.token && this.options.token.value) {
-      payload.headers = {
+      payload.headers = Object.assign(headers, {
         Authorization: this.options.token.value,
-      };
+      });
     }
 
-    return this.requestPromise(payload)
-      .then(([body]) => body.response);
+    const [body] = await this.requestPromise(payload);
+
+    return body.response;
   }
 }
 

@@ -2,6 +2,10 @@
  * Created by Luke on 01/05/15.
  */
 
+const APD_BASE = '/apd-api';
+
+const apdRoute = (route, transformer) => `${APD_BASE}/${transformer(route)}`;
+
 const endpoints = {
 
   /**
@@ -103,6 +107,17 @@ const endpoints = {
   USER_SERVICE: '/user',
   USER_VERIFICATION_SERVICE: '/user-verification',
   VISIBILITY_PROFILE_SERVICE: '/visibility-profile',
+  apd: {
+    members(id) {
+      const transform = route => `members/${id}/${route}`;
+
+      return {
+        UPLOAD_SERVICE: apdRoute('uploads', transform),
+        EVENT_SERVICE: apdRoute('events', transform),
+      };
+    },
+    BASE: APD_BASE,
+  },
 };
 
 export default endpoints;
