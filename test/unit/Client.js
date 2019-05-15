@@ -111,11 +111,15 @@ describe('Client', () => {
     });
 
     it('should not contain formData in payload when changing content-type (GET)', async () => {
-      const payload = await client.request('GET', null, null, {
+      let payload = await client.request('GET', null, null, {
         'Content-Type': 'application/multipart',
       });
 
       expect(payload).to.not.contain.keys('formData');
+
+      payload = await client.get(null, { q: 'apple' });
+
+      expect(payload.qs.q).to.equals('apple');
     });
 
     it('should contain custom payload key when changing content-type and overloading dataType', async () => {
