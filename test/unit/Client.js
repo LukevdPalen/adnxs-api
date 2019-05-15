@@ -50,6 +50,81 @@ describe('Client', () => {
     });
   });
 
+  describe('request options overload', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(client, 'request')
+        .mockImplementation((method, endpoint, ...args) => {
+          const payload = {};
+
+          const [data, headers = {}, dataType = 'formData'] = args;
+
+          if (method === 'GET') {
+            payload.json = true;
+            payload.qs = data;
+          } else if ('Content-Type' in headers
+            && typeof headers['Content-Type'] === 'string'
+            && headers['Content-Type'] !== 'application/json') {
+            payload[dataType] = data;
+          } else {
+            payload.json = data;
+          }
+
+          return Object.assign(payload, {
+            method,
+            uri: `example.com/${endpoint}`,
+            headers,
+          });
+        });
+    });
+
+    it('should contain json in payload ', async () => {
+      const payload = await client.request('POST', null);
+
+      expect(payload).to.contain.keys('json');
+    });
+
+    it('should contain formData in payload when changing content-type (POST, PUT, DELETE)', async () => {
+      let payload = await client.request('POST', null, null, {
+        'Content-Type': 'application/multipart',
+      });
+
+      expect(payload).to.contain.keys('formData');
+
+      payload = await client.request('PUT', null, null, {
+        'Content-Type': 'application/multipart',
+      });
+
+      expect(payload).to.contain.keys('formData');
+
+      payload = await client.request('DELETE', null, null, {
+        'Content-Type': 'application/multipart',
+      });
+
+      expect(payload).to.contain.keys('formData');
+    });
+
+    it('should not contain formData in payload when changing content-type (GET)', async () => {
+      const payload = await client.request('GET', null, null, {
+        'Content-Type': 'application/multipart',
+      });
+
+      expect(payload).to.not.contain.keys('formData');
+    });
+
+    it('should contain custom payload key when changing content-type and overloading dataType', async () => {
+      const payload = await client.request('POST', null, null, {
+        'Content-Type': 'application/multipart',
+      }, 'dataForm');
+
+      expect(payload).to.contain.keys('dataForm');
+    });
+
+    afterAll(() => {
+      jest.spyOn(client, 'request').mockRestore();
+    });
+  });
+
   describe('RateLimit', () => {
     beforeEach(() => {
       client = new Client(null, null, {
