@@ -51,8 +51,8 @@ class Transport {
    * @params {object} [args={}] - arguments
    * @returns {Promise<Object, Error>} Response body
    * */
-  put(endpoint, args = {}) {
-    return this.request('PUT', endpoint, args);
+  put(endpoint, ...args) {
+    return this.request('PUT', endpoint, ...args);
   }
 
   /**
@@ -64,8 +64,8 @@ class Transport {
    * @params {object} [args={}] - arguments
    * @returns {Promise<Object, Error>} Response body
    * */
-  post(endpoint, args = {}) {
-    return this.request('POST', endpoint, args);
+  post(endpoint, ...args) {
+    return this.request('POST', endpoint, ...args);
   }
 
   /**
@@ -77,8 +77,8 @@ class Transport {
    * @params {object} [args={}] - arguments
    * @returns {Promise<Object, Error>} Response body
    * */
-  delete(endpoint, args = {}) {
-    return this.request('DELETE', endpoint, args);
+  delete(endpoint, ...args) {
+    return this.request('DELETE', endpoint, ...args);
   }
 
   requestPromise(options) {
@@ -123,7 +123,7 @@ class Transport {
       uri: this.options.apiBase + endpoint,
     };
 
-    const [data, headers = {}, dataType = 'formData'] = args;
+    const [data = {}, headers = {}, dataType = 'formData'] = args;
 
     if (this.options.proxy) {
       payload.proxy = this.options.proxy;

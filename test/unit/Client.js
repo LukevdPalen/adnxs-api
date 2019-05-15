@@ -85,19 +85,25 @@ describe('Client', () => {
     });
 
     it('should contain formData in payload when changing content-type (POST, PUT, DELETE)', async () => {
-      let payload = await client.request('POST', null, null, {
+      let payload = await client.post(null, null, {
         'Content-Type': 'application/multipart',
       });
 
       expect(payload).to.contain.keys('formData');
 
-      payload = await client.request('PUT', null, null, {
+      payload = await client.put(null, null, {
         'Content-Type': 'application/multipart',
       });
 
       expect(payload).to.contain.keys('formData');
 
-      payload = await client.request('DELETE', null, null, {
+      payload = await client.delete(null, null, {
+        'Content-Type': 'application/multipart',
+      });
+
+      expect(payload).to.contain.keys('formData');
+
+      payload = await client.request('OPTIONS', null, null, {
         'Content-Type': 'application/multipart',
       });
 
